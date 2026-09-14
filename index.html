@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Harding Wang — Electrical Engineering</title>
+<meta name="description" content="Harding (Hardy) Wang — Electrical Engineering student, PCB design and embedded systems." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+
+<style>
+  :root{
+    --bg: #f5f6f2;
+    --panel: #ffffff;
+    --ink: #12171b;
+    --ink-soft: #55606a;
+    --line: #d9ded6;
+    --line-strong: #b9c2ba;
+    --green: #1f6f54;
+    --green-soft: #e6efe9;
+    --copper: #b9713a;
+    --copper-soft: #f2e3d3;
+    --mono: 'IBM Plex Mono', ui-monospace, monospace;
+    --sans: 'IBM Plex Sans', system-ui, sans-serif;
+    --nav-w: 220px;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.55;
+  }
+  img, canvas { display:block; max-width:100%; }
+
+  a { color: var(--green); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  :focus-visible {
+    outline: 2px solid var(--green);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+  }
+
+  /* ---------- layout shell ---------- */
+  .shell {
+    display: grid;
+    grid-template-columns: var(--nav-w) 1fr;
+    min-height: 100vh;
+  }
+
+  /* ---------- sidebar nav ---------- */
+  .sidenav {
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    width: var(--nav-w);
+    border-right: 1px solid var(--line);
+    background: var(--panel);
+    padding: 28px 22px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    z-index: 20;
+  }
+  .brand {
+    font-family: var(--mono);
+    font-size: 14px;
+    letter-spacing: 0.02em;
+    color: var(--ink);
+    line-height: 1.4;
+  }
+  .brand strong { display:block; font-size: 16px; }
+  .brand span { color: var(--ink-soft); }
+
+  .navlist { list-style:none; margin: 40px 0 0; padding:0; display:flex; flex-direction:column; gap:6px; }
+  .navlist a {
+    display:flex; align-items:center; gap:10px;
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--ink-soft);
+    padding: 7px 8px;
+    border-radius: 2px;
+  }
+  .navlist a:hover, .navlist a.active { color: var(--ink); background: var(--green-soft); text-decoration:none; }
+  .pin { width:6px; height:6px; border-radius:50%; background: var(--line-strong); flex-shrink:0; }
+  .navlist a.active .pin, .navlist a:hover .pin { background: var(--green); }
+
+  .navfoot { font-family: var(--mono); font-size: 12px; color: var(--ink-soft); display:flex; flex-direction:column; gap:6px; }
+
+  .navtoggle { display:none; }
+
+  /* ---------- main content ---------- */
+  main { grid-column: 2; padding: 0 0 60px; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 0 48px; }
+
+  section { padding: 96px 0 0; }
+  section:first-of-type { padding-top: 0; }
+
+  .kicker {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--green);
+    display:flex; align-items:center; gap:10px;
+    margin-bottom: 14px;
+  }
+  .kicker::before { content:""; width: 22px; height:1px; background: var(--green); display:inline-block; }
+
+  h1, h2, h3 { font-family: var(--mono); font-weight: 500; margin: 0; color: var(--ink); }
+  h2 { font-size: 28px; letter-spacing: -0.01em; }
+  h3 { font-size: 17px; }
+  p { margin: 0 0 1em; max-width: 62ch; color: var(--ink); }
+  .soft { color: var(--ink-soft); }
+
+  /* ---------- hero ---------- */
+  .hero {
+    padding: 64px 0 0;
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 40px;
+    align-items: center;
+  }
+  .hero h1 {
+    font-size: 40px;
+    line-height: 1.15;
+    margin-bottom: 14px;
+  }
+  .hero .role {
+    font-family: var(--mono);
+    font-size: 16px;
+    color: var(--ink-soft);
+    margin-bottom: 22px;
+  }
+  .hero-actions { display:flex; gap: 12px; flex-wrap: wrap; margin-top: 6px; }
+  .btn {
+    font-family: var(--mono);
+    font-size: 13px;
+    padding: 10px 16px;
+    border: 1px solid var(--ink);
+    color: var(--ink);
+    border-radius: 2px;
+    transition: background 0.15s, color 0.15s;
+  }
+  .btn:hover { background: var(--ink); color: var(--panel); text-decoration:none; }
+  .btn.primary { background: var(--green); color: #fff; border-color: var(--green); }
+  .btn.primary:hover { background: #17573f; border-color:#17573f; }
+
+  .hero-viewer-wrap {
+    border: 1px solid var(--line);
+    background: var(--panel);
+    padding: 14px;
+  }
+  .viewer-caption {
+    display:flex; justify-content:space-between; align-items:baseline;
+    font-family: var(--mono); font-size: 11px; color: var(--ink-soft);
+    margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--line);
+  }
+  .viewer-caption b { color: var(--ink); font-weight:500; }
+
+  .viewer-canvas-box {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    background: linear-gradient(135deg, #eef1ec 0%, #f7f8f5 100%);
+    overflow: hidden;
+    cursor: grab;
+  }
+  .viewer-canvas-box:active { cursor: grabbing; }
+  .viewer-canvas-box canvas { width:100% !important; height:100% !important; }
+  .viewer-loading {
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    font-family: var(--mono); font-size: 12px; color: var(--ink-soft);
+    background: #f7f8f5;
+    transition: opacity 0.25s;
+  }
+  .viewer-loading.hidden { opacity:0; pointer-events:none; }
+  .viewer-hint {
+    position:absolute; bottom:8px; right:10px;
+    font-family: var(--mono); font-size: 10px; color: var(--ink-soft);
+    background: rgba(255,255,255,0.75); padding: 3px 7px; border-radius:2px;
+    pointer-events:none;
+  }
+
+  /* ---------- about ---------- */
+  .about-grid { display:grid; grid-template-columns: 1fr 280px; gap: 40px; }
+  .factsheet { border: 1px solid var(--line); background: var(--panel); padding: 18px 20px; }
+  .factsheet dl { margin:0; display:grid; grid-template-columns: auto 1fr; gap: 8px 14px; font-size: 13px; }
+  .factsheet dt { font-family: var(--mono); color: var(--ink-soft); }
+  .factsheet dd { margin:0; }
+
+  /* ---------- experience timeline ---------- */
+  .timeline { position: relative; padding-left: 26px; border-left: 1px solid var(--line); }
+  .tl-item { position: relative; padding-bottom: 44px; }
+  .tl-item:last-child { padding-bottom: 0; }
+  .tl-item::before {
+    content:""; position:absolute; left:-31px; top:4px;
+    width:9px; height:9px; border-radius:50%;
+    background: var(--panel); border: 2px solid var(--green);
+  }
+  .tl-head { display:flex; justify-content:space-between; align-items:baseline; gap: 14px; flex-wrap:wrap; margin-bottom: 6px; }
+  .tl-role { font-family: var(--mono); font-size: 16px; }
+  .tl-org { color: var(--ink-soft); font-size: 14px; }
+  .tl-date { font-family: var(--mono); font-size: 12px; color: var(--ink-soft); white-space:nowrap; }
+  .tl-item ul { margin: 10px 0 0; padding-left: 18px; }
+  .tl-item li { margin-bottom: 6px; max-width: 60ch; }
+
+  /* ---------- projects ---------- */
+  .project {
+    border: 1px solid var(--line);
+    background: var(--panel);
+    margin-bottom: 28px;
+  }
+  .project-body { padding: 22px 24px; }
+  .project-top { display:flex; justify-content:space-between; gap: 16px; align-items:baseline; flex-wrap:wrap; margin-bottom: 8px; }
+  .project-tags { display:flex; gap:6px; flex-wrap:wrap; margin: 10px 0 14px; }
+  .tag {
+    font-family: var(--mono); font-size: 11px; color: var(--copper);
+    background: var(--copper-soft); padding: 3px 8px; border-radius: 2px;
+  }
+  .project-viewer .viewer-canvas-box { aspect-ratio: 16/10; }
+  .project-viewer { border-top: 1px solid var(--line); }
+  .project.no-viewer .project-body { padding-bottom: 24px; }
+
+  .project-grid-simple { display:grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 720px) { .project-grid-simple { grid-template-columns: 1fr; } }
+
+  /* ---------- footer ---------- */
+  footer {
+    margin-top: 100px;
+    border-top: 1px solid var(--line);
+    padding: 28px 0 40px;
+  }
+  .footer-row { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; font-family: var(--mono); font-size:12px; color: var(--ink-soft); }
+  .footer-links { display:flex; gap:18px; }
+
+  /* ---------- hero decorative trace (one orchestrated entrance) ---------- */
+  .trace-svg { position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:-1; opacity:0.5; }
+  .trace-svg path {
+    fill:none; stroke: var(--line-strong); stroke-width:1;
+    stroke-dasharray: 6 4;
+    stroke-dashoffset: 400;
+    animation: draw 1.6s ease-out forwards;
+  }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+
+  /* ---------- responsive ---------- */
+  @media (max-width: 980px) {
+    .hero { grid-template-columns: 1fr; }
+    .about-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 760px) {
+    .shell { grid-template-columns: 1fr; }
+    .sidenav {
+      position: sticky; width:100%; height:auto; flex-direction:row;
+      justify-content:space-between; align-items:center; padding: 14px 20px;
+      border-right:none; border-bottom:1px solid var(--line);
+    }
+    .navlist { display:none; }
+    .navfoot { display:none; }
+    main { grid-column: 1; }
+    .wrap { padding: 0 22px; }
+    section { padding-top: 64px; }
+    .hero { padding-top: 36px; }
+    .hero h1 { font-size: 30px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="shell">
+  <nav class="sidenav" aria-label="Primary">
+    <div>
+      <div class="brand">
+        <strong>Harding Wang</strong>
+        <span>EE — PCB &amp; Embedded</span>
+      </div>
+      <ul class="navlist">
+        <li><a href="#about"><span class="pin"></span>About</a></li>
+        <li><a href="#experience"><span class="pin"></span>Experience</a></li>
+        <li><a href="#projects"><span class="pin"></span>Projects</a></li>
+        <li><a href="#contact"><span class="pin"></span>Contact</a></li>
+      </ul>
+    </div>
+    <div class="navfoot">
+      <span>Vancouver, BC</span>
+      <span>UBC — Electrical Eng.</span>
+    </div>
+  </nav>
+
+  <main>
+    <div class="wrap">
+
+      <section class="hero" id="top" style="position:relative;">
+        <svg class="trace-svg" viewBox="0 0 800 500" preserveAspectRatio="none" aria-hidden="true">
+          <path d="M0,60 H180 L210,90 V220 L240,250 H500" />
+          <path d="M800,420 H620 L590,390 V300" />
+        </svg>
+        <div>
+          <p class="kicker">Electrical Engineering · UBC</p>
+          <h1>Boards that carry current,<br>code, and signal.</h1>
+          <p class="role">3rd-year EE student · PCB design &amp; embedded systems · UBC Solar, Power &amp; Signals</p>
+          <p class="soft">
+            I design and build the low-voltage boards, firmware, and signal chains that
+            sit underneath physical systems — currently on UBC Solar's Power and Signals
+            team, and looking for my next internship in PCB design, firmware, or signal
+            processing.
+          </p>
+          <div class="hero-actions">
+            <a class="btn primary" href="#projects">View projects</a>
+            <a class="btn" href="#contact">Get in touch</a>
+            <a class="btn" href="resume.pdf">Resume ↓</a>
+          </div>
+        </div>
+
+        <div class="hero-viewer-wrap">
+          <div class="viewer-canvas-box" id="viewer-hero">
+            <div class="viewer-loading" data-role="loading">loading model…</div>
+            <div class="viewer-hint">drag to rotate · scroll to zoom</div>
+          </div>
+          <div class="viewer-caption">
+            <span><b>STR Rev 3.0</b> — steering wheel PCB</span>
+            <span>UBC Solar</span>
+          </div>
+        </div>
+      </section>
+
+      <section id="about">
+        <p class="kicker">About</p>
+        <h2>Who I am</h2>
+        <div class="about-grid" style="margin-top:24px;">
+          <div>
+            <p>
+              I'm Hardy — a third-year Electrical Engineering student at UBC, currently
+              splitting my time between a co-op placement and hands-on board design for
+              UBC Solar. I like the layer of engineering where a schematic turns into a
+              physical board: net topology, grounding, signal integrity, and the firmware
+              that has to talk to all of it correctly.
+            </p>
+            <p>
+              Most of my recent work lives across PCB layout in Altium, STM32-based
+              firmware, and CAN bus systems — with a growing focus on signal processing.
+              I'm working toward internships in California doing PCB design, firmware, or
+              signal processing for hardware-heavy teams.
+            </p>
+            <p class="soft">
+              <!-- TODO: fold in resume specifics once uploaded (dates, GPA, coursework, etc.) -->
+              Outside of coursework and co-op, I build personal hardware projects —
+              a LiDAR-based docking system, a voice-activated assistant, and a RISC-V
+              CPU written in SystemVerilog.
+            </p>
+          </div>
+          <div class="factsheet">
+            <dl>
+              <dt>Based</dt><dd>Vancouver, BC</dd>
+              <dt>From</dt><dd>Toronto, ON</dd>
+              <dt>School</dt><dd>UBC, EE — Year 3</dd>
+              <dt>Now</dt><dd>Co-op, Aecon</dd>
+              <dt>Team</dt><dd>UBC Solar, Power &amp; Signals</dd>
+              <dt>Tools</dt><dd>Altium, STM32, CAN</dd>
+              <dt>Seeking</dt><dd>2027 internship, California</dd>
+            </dl>
+          </div>
+        </div>
+      </section>
+
+      <section id="experience">
+        <p class="kicker">Experience</p>
+        <h2>Where I've worked</h2>
+        <div class="timeline" style="margin-top:28px;">
+
+          <div class="tl-item">
+            <div class="tl-head">
+              <div><span class="tl-role">Project Technician Co-op</span> <span class="tl-org">— Aecon</span></div>
+              <span class="tl-date">Present — Apr 2027</span>
+            </div>
+            <p class="soft" style="margin-bottom:8px;">Power line design.</p>
+            <ul class="soft">
+              <li>Supporting power line design work as part of an extended co-op term.</li>
+              <!-- TODO: replace with specific scope/deliverables once resume is uploaded -->
+            </ul>
+          </div>
+
+          <div class="tl-item">
+            <div class="tl-head">
+              <div><span class="tl-role">Electrical Engineer, Power &amp; Signals</span> <span class="tl-org">— UBC Solar</span></div>
+              <span class="tl-date">Ongoing</span>
+            </div>
+            <p class="soft" style="margin-bottom:8px;">Solar race car electrical systems, reporting to Electrical Lead Aarjav Jain.</p>
+            <ul class="soft">
+              <li>Designed the STR Rev 3.0 steering wheel PCB, including power protection and grounding.</li>
+              <li>Sourced and validated the R-78K3.3-0.5 as a drop-in replacement buck converter after the original part (P78E03-1000) went end-of-life.</li>
+              <li>Contributing to low-voltage board design and solar cell / encapsulation research for the Cascadia vehicle.</li>
+            </ul>
+          </div>
+
+          <div class="tl-item">
+            <div class="tl-head">
+              <div><span class="tl-role">Hardware Engineer Intern</span> <span class="tl-org">— e-Radio</span></div>
+              <span class="tl-date">Prior</span>
+            </div>
+            <ul class="soft">
+              <li>Diagnosed and resolved an ADC/RF resource conflict affecting signal integrity.</li>
+              <!-- TODO: expand with resume detail -->
+            </ul>
+          </div>
+
+        </div>
+      </section>
+
+      <section id="projects">
+        <p class="kicker">Projects</p>
+        <h2>What I've built</h2>
+
+        <div style="margin-top:28px;">
+
+          <article class="project">
+            <div class="project-body">
+              <div class="project-top">
+                <h3>STR Rev 3.0 — Steering Wheel PCB</h3>
+                <span class="soft" style="font-family:var(--mono); font-size:12px;">UBC Solar</span>
+              </div>
+              <p class="soft">
+                Steering wheel PCB for UBC Solar's race vehicle, covering power
+                protection and grounding. Sourced and validated a replacement buck
+                converter after the original component went end-of-life.
+              </p>
+              <div class="project-tags">
+                <span class="tag">Altium</span>
+                <span class="tag">Power protection</span>
+                <span class="tag">Grounding</span>
+              </div>
+            </div>
+            <div class="project-viewer">
+              <div class="viewer-canvas-box" id="viewer-steering" style="border:none;">
+                <div class="viewer-loading" data-role="loading">loading model…</div>
+                <div class="viewer-hint">drag to rotate · scroll to zoom</div>
+              </div>
+            </div>
+          </article>
+
+          <article class="project">
+            <div class="project-body">
+              <div class="project-top">
+                <h3>eNav — RF Fingerprint Data Logger</h3>
+                <span class="soft" style="font-family:var(--mono); font-size:12px;">Personal project</span>
+              </div>
+              <p class="soft">
+                ESP32/Si4732-based data collection rig for RF fingerprint location
+                authentication — logging RTC time, GPS-adjacent context, and FM signal
+                data to Micro SD for later model training.
+              </p>
+              <div class="project-tags">
+                <span class="tag">ESP32</span>
+                <span class="tag">Si4732</span>
+                <span class="tag">Data logging</span>
+              </div>
+            </div>
+            <div class="project-viewer">
+              <div class="viewer-canvas-box" id="viewer-enav" style="border:none;">
+                <div class="viewer-loading" data-role="loading">loading model…</div>
+                <div class="viewer-hint">drag to rotate · scroll to zoom</div>
+              </div>
+            </div>
+          </article>
+
+          <article class="project">
+            <div class="project-body">
+              <div class="project-top">
+                <h3>PCB1</h3>
+                <span class="soft" style="font-family:var(--mono); font-size:12px;">Personal project</span>
+              </div>
+              <p class="soft">
+                <!-- TODO: replace with the real name/description of this board -->
+                Board design and layout — details to be filled in.
+              </p>
+              <div class="project-tags">
+                <span class="tag">PCB design</span>
+              </div>
+            </div>
+            <div class="project-viewer">
+              <div class="viewer-canvas-box" id="viewer-pcb1" style="border:none;">
+                <div class="viewer-loading" data-role="loading">loading model…</div>
+                <div class="viewer-hint">drag to rotate · scroll to zoom</div>
+              </div>
+            </div>
+          </article>
+
+          <div class="project-grid-simple">
+            <article class="project no-viewer">
+              <div class="project-body">
+                <h3>Automotive mmWave Radar Perception Node</h3>
+                <p class="soft" style="margin-top:8px;">
+                  TI IWR6843/AWR1642 front end with an STM32H7 performing real-time
+                  range-Doppler FFT and CFAR detection, broadcasting results over CAN-FD.
+                </p>
+                <div class="project-tags">
+                  <span class="tag">RF layout</span>
+                  <span class="tag">DSP</span>
+                  <span class="tag">CAN-FD</span>
+                </div>
+              </div>
+            </article>
+
+            <article class="project no-viewer">
+              <div class="project-body">
+                <h3>Modular CAN Vehicle Network</h3>
+                <p class="soft" style="margin-top:8px;">
+                  Daisy-chained sensing, display, and command nodes over a shared CAN
+                  bus — a small-scale mirror of a real automotive network topology.
+                </p>
+                <div class="project-tags">
+                  <span class="tag">CAN bus</span>
+                  <span class="tag">System design</span>
+                </div>
+              </div>
+            </article>
+
+            <article class="project no-viewer">
+              <div class="project-body">
+                <h3>RISC-V CPU (SystemVerilog)</h3>
+                <p class="soft" style="margin-top:8px;">
+                  A RISC-V core implemented from scratch in SystemVerilog.
+                </p>
+                <div class="project-tags">
+                  <span class="tag">SystemVerilog</span>
+                  <span class="tag">CPU design</span>
+                </div>
+              </div>
+            </article>
+
+            <article class="project no-viewer">
+              <div class="project-body">
+                <h3>LiDAR Home Dock &amp; Voice Assistant</h3>
+                <p class="soft" style="margin-top:8px;">
+                  A LiDAR-based docking system, and a voice-activated assistant reusing
+                  its MEMS microphone hardware (INMP441, I2S).
+                </p>
+                <div class="project-tags">
+                  <span class="tag">LiDAR</span>
+                  <span class="tag">I2S / MEMS</span>
+                </div>
+              </div>
+            </article>
+          </div>
+
+        </div>
+      </section>
+
+      <footer id="contact">
+        <p class="kicker">Contact</p>
+        <h2 style="margin-bottom:14px;">Let's talk boards.</h2>
+        <p class="soft">
+          <!-- TODO: fill in real email / LinkedIn / GitHub once provided -->
+          Reach me at <a href="mailto:youremail@example.com">youremail@example.com</a>.
+        </p>
+        <div class="footer-row" style="margin-top:40px;">
+          <span>© 2026 Harding Wang</span>
+          <div class="footer-links">
+            <a href="#top">Back to top</a>
+            <a href="mailto:youremail@example.com">Email</a>
+            <a href="#">LinkedIn</a>
+            <a href="#">GitHub</a>
+          </div>
+        </div>
+      </footer>
+
+    </div>
+  </main>
+</div>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+/**
+ * Sets up a lazy-loaded, mouse-controllable 3D viewer inside a container div.
+ * container: element with class .viewer-canvas-box
+ * modelUrl: path to .glb file
+ */
+function createViewer(containerId, modelUrl) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  const loadingEl = container.querySelector('[data-role="loading"]');
+
+  let initialized = false;
+
+  function init() {
+    if (initialized) return;
+    initialized = true;
+
+    const width = container.clientWidth;
+    const height = container.clientHeight;
+
+    const scene = new THREE.Scene();
+    scene.background = null;
+
+    const camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 5000);
+    camera.position.set(0, 0, 10);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(width, height);
+    container.appendChild(renderer.domElement);
+
+    // Lighting: soft studio setup, light background friendly
+    const hemi = new THREE.HemisphereLight(0xffffff, 0xcfd6cc, 1.1);
+    scene.add(hemi);
+    const key = new THREE.DirectionalLight(0xffffff, 1.4);
+    key.position.set(5, 8, 6);
+    scene.add(key);
+    const fill = new THREE.DirectionalLight(0xffffff, 0.5);
+    fill.position.set(-6, -2, -4);
+    scene.add(fill);
+
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.08;
+    controls.rotateSpeed = 0.8;
+    controls.minDistance = 0.5;
+    controls.maxDistance = 200;
+
+    const loader = new GLTFLoader();
+    loader.load(
+      modelUrl,
+      (gltf) => {
+        const model = gltf.scene;
+
+        // Center and scale the model to fit the viewport nicely
+        const box = new THREE.Box3().setFromObject(model);
+        const size = new THREE.Vector3();
+        box.getSize(size);
+        const center = new THREE.Vector3();
+        box.getCenter(center);
+
+        model.position.sub(center);
+
+        const maxDim = Math.max(size.x, size.y, size.z) || 1;
+        const targetSize = 6;
+        const scale = targetSize / maxDim;
+        model.scale.setScalar(scale);
+
+        scene.add(model);
+
+        camera.position.set(targetSize * 0.9, targetSize * 0.7, targetSize * 0.9);
+        controls.target.set(0, 0, 0);
+        controls.update();
+
+        if (loadingEl) loadingEl.classList.add('hidden');
+      },
+      undefined,
+      (err) => {
+        if (loadingEl) loadingEl.textContent = 'model failed to load';
+        console.error('GLTF load error for', modelUrl, err);
+      }
+    );
+
+    function resize() {
+      const w = container.clientWidth;
+      const h = container.clientHeight;
+      if (w === 0 || h === 0) return;
+      renderer.setSize(w, h);
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+    }
+    window.addEventListener('resize', resize);
+
+    function animate() {
+      requestAnimationFrame(animate);
+      controls.update();
+      renderer.render(scene, camera);
+    }
+    animate();
+  }
+
+  // Lazy-init: only load the (potentially multi-MB) model once it's near the viewport
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        init();
+        observer.disconnect();
+      }
+    });
+  }, { rootMargin: '200px' });
+  observer.observe(container);
+}
+
+createViewer('viewer-hero', 'assets/models/Steering_Wheel.glb');
+createViewer('viewer-steering', 'assets/models/Steering_Wheel.glb');
+createViewer('viewer-enav', 'assets/models/eNav.glb');
+createViewer('viewer-pcb1', 'assets/models/PCB1.glb');
+
+// Active nav highlighting on scroll
+const sections = document.querySelectorAll('main section, footer#contact');
+const navLinks = document.querySelectorAll('.navlist a');
+const navObserver = new IntersectionObserver((entries) => {
+  entries.forEach((entry) => {
+    if (entry.isIntersecting) {
+      const id = entry.target.getAttribute('id');
+      navLinks.forEach((link) => {
+        link.classList.toggle('active', link.getAttribute('href') === '#' + id);
+      });
+    }
+  });
+}, { rootMargin: '-40% 0px -50% 0px' });
+sections.forEach((s) => navObserver.observe(s));
+</script>
+
+</body>
+</html>
